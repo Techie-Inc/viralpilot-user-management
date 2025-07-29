@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  user-management:
+    build: .
+    container_name: viralpilot-user-management
+    ports:
+      - "8001:8001"
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - SERVICE_HOST=0.0.0.0
+      - SERVICE_PORT=8001
+      - CORS_ORIGINS=${CORS_ORIGINS:-*}
+      - CORS_ALLOW_CREDENTIALS=${CORS_ALLOW_CREDENTIALS:-true}
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - viralpilot-network
+
+networks:
+  viralpilot-network:
+    driver: bridge 
